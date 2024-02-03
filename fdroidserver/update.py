@@ -1053,7 +1053,7 @@ def insert_localized_app_metadata(apps):
         if not os.path.isdir(srcd):
             continue
         for root, dirs, files in os.walk(srcd):
-            segments = root.split('/')
+            segments = root.replace('\\', '/').split('/')
             packageName = segments[1]
             if packageName not in apps:
                 logging.debug(packageName + ' does not have app metadata, skipping l18n scan.')
@@ -1155,7 +1155,7 @@ def insert_localized_app_metadata(apps):
         for f in sorted(glob.glob(os.path.join(d, '*.*')) + glob.glob(os.path.join(d, '*Screenshots', '*.*'))):
             if not os.path.isfile(f):
                 continue
-            segments = f.split('/')
+            segments = f.replace('\\', '/').split('/')
             packageName = segments[1]
             locale = segments[2]
             screenshotdir = segments[3]

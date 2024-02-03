@@ -529,9 +529,12 @@ def read_config(opts=None):
 
     return config
 
+import posixpath
 
 def file_entry(filename, hash_value=None):
     meta = {}
+    filename = filename.replace('\\', '/')
+    print(filename)
     meta["name"] = "/" + filename.split("/", 1)[1]
     meta["sha256"] = hash_value or common.sha256sum(filename)
     meta["size"] = os.stat(filename).st_size
