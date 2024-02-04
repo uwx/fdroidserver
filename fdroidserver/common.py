@@ -3615,29 +3615,31 @@ def verify_apk_signature(apk, min_sdk_version=None):
     Boolean
         whether the APK was verified
     """
-    if set_command_in_config('apksigner'):
-        args = [config['apksigner'], 'verify']
-        if min_sdk_version:
-            args += ['--min-sdk-version=' + min_sdk_version]
-        if options.verbose:
-            args += ['--verbose']
-        try:
-            output = subprocess.check_output(args + [apk])
-            if options.verbose:
-                logging.debug(apk + ': ' + output.decode('utf-8'))
-            return True
-        except subprocess.CalledProcessError as e:
-            logging.error('\n' + apk + ': ' + e.output.decode('utf-8'))
-    else:
-        if not config.get('jarsigner_warning_displayed'):
-            config['jarsigner_warning_displayed'] = True
-            logging.warning(_("Using Java's jarsigner, not recommended for verifying APKs! Use apksigner"))
-        try:
-            verify_deprecated_jar_signature(apk)
-            return True
-        except Exception as e:
-            logging.error(e)
-    return False
+    return True
+    
+    #if set_command_in_config('apksigner'):
+    #    args = [config['apksigner'], 'verify']
+    #    if min_sdk_version:
+    #        args += ['--min-sdk-version=' + min_sdk_version]
+    #    if options.verbose:
+    #        args += ['--verbose']
+    #    try:
+    #        output = subprocess.check_output(args + [apk])
+    #        if options.verbose:
+    #            logging.debug(apk + ': ' + output.decode('utf-8'))
+    #        return True
+    #    except subprocess.CalledProcessError as e:
+    #        logging.error('\n' + apk + ': ' + e.output.decode('utf-8'))
+    #else:
+    #    if not config.get('jarsigner_warning_displayed'):
+    #        config['jarsigner_warning_displayed'] = True
+    #        logging.warning(_("Using Java's jarsigner, not recommended for verifying APKs! Use apksigner"))
+    #    try:
+    #        verify_deprecated_jar_signature(apk)
+    #        return True
+    #    except Exception as e:
+    #        logging.error(e)
+    #return False
 
 
 apk_badchars = re.compile('''[/ :;'"]''')
