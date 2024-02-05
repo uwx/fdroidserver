@@ -3615,31 +3615,30 @@ def verify_apk_signature(apk, min_sdk_version=None):
     Boolean
         whether the APK was verified
     """
-    return True
-    
-    #if set_command_in_config('apksigner'):
-    #    args = [config['apksigner'], 'verify']
-    #    if min_sdk_version:
-    #        args += ['--min-sdk-version=' + min_sdk_version]
-    #    if options.verbose:
-    #        args += ['--verbose']
-    #    try:
-    #        output = subprocess.check_output(args + [apk])
-    #        if options.verbose:
-    #            logging.debug(apk + ': ' + output.decode('utf-8'))
-    #        return True
-    #    except subprocess.CalledProcessError as e:
-    #        logging.error('\n' + apk + ': ' + e.output.decode('utf-8'))
-    #else:
-    #    if not config.get('jarsigner_warning_displayed'):
-    #        config['jarsigner_warning_displayed'] = True
-    #        logging.warning(_("Using Java's jarsigner, not recommended for verifying APKs! Use apksigner"))
-    #    try:
-    #        verify_deprecated_jar_signature(apk)
-    #        return True
-    #    except Exception as e:
-    #        logging.error(e)
-    #return False
+
+    if set_command_in_config('apksigner'):
+        args = [config['apksigner'], 'verify']
+        if min_sdk_version:
+            args += ['--min-sdk-version=' + min_sdk_version]
+        if options.verbose:
+            args += ['--verbose']
+        try:
+            output = subprocess.check_output(args + [apk])
+            if options.verbose:
+                logging.debug(apk + ': ' + output.decode('utf-8'))
+            return True
+        except subprocess.CalledProcessError as e:
+            logging.error('\n' + apk + ': ' + e.output.decode('utf-8'))
+    else:
+        if not config.get('jarsigner_warning_displayed'):
+            config['jarsigner_warning_displayed'] = True
+            logging.warning(_("Using Java's jarsigner, not recommended for verifying APKs! Use apksigner"))
+        try:
+            verify_deprecated_jar_signature(apk)
+            return True
+        except Exception as e:
+            logging.error(e)
+    return False
 
 
 apk_badchars = re.compile('''[/ :;'"]''')
@@ -3724,7 +3723,7 @@ def set_command_in_config(command):
     return False
 
 
-def find_command(command):
+def find_command(command: str):
     """Find the full path of a command, or None if it can't be found in the PATH."""
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
@@ -3733,12 +3732,29 @@ def find_command(command):
     if fpath:
         if is_exe(command):
             return command
+
+        if not command.endswith('.cmd'):
+            if is_exe(command + '.cmd'):
+                return command + '.cmd'
+
+        if not command.endswith('.bat'):
+            if is_exe(command + '.bat'):
+                return command + '.bat'
     else:
         for path in os.environ["PATH"].split(os.pathsep):
             path = path.strip('"')
             exe_file = os.path.join(path, command)
             if is_exe(exe_file):
                 return exe_file
+
+            if not exe_file.endswith('.cmd'):
+                if is_exe(exe_file + '.cmd'):
+                    return exe_file + '.cmd'
+
+            if not exe_file.endswith('.bat'):
+                if is_exe(exe_file + '.bat'):
+                    return exe_file + '.bat'
+
 
     return None
 

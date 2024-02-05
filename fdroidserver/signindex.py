@@ -53,7 +53,7 @@ def sign_jar(jar, use_old_algs=False):
     This method requires a properly initialized config object.
 
     """
-    if use_old_algs:
+    if use_old_algs or not common.set_command_in_config('apksigner'):
         # This does use old hashing algorithms, i.e. SHA1, but that's not
         # broken yet for file verification.  This could be set to SHA256,
         # but then Android < 4.3 would not be able to verify it.
